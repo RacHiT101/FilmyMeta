@@ -1,47 +1,59 @@
 import { addDoc, updateDoc, query, where, getDocs } from "firebase/firestore";
 import { doc } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ThreeCircles, ThreeDots } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
 import ReactStars from "react-stars";
 import swal from "sweetalert";
+import { Appstate } from "../App";
 import { reviewsRef, db } from "./firebase/firebase";
 
 const Reviews = ({ id, prevRating, userRated }) => {
+  const navigate = useNavigate();
+  const useAppstate = useContext(Appstate);
   const [rating, setRating] = useState(0);
   const [form, setform] = useState("");
   const [data, setdata] = useState([]);
   const [Loading, setLoading] = useState(false);
   const [ReviewLoading, setReviewLoading] = useState(false);
+  const [Added, setAdded] = useState(0);
+
 
   const sendReview = async () => {
     setLoading(true);
-    await addDoc(reviewsRef, {
-      Movieid: id,
-      Name: "KL Rahul",
-      rating: rating,
-      Thoughts: form,
-      Timestamp: new Date().getTime(),
-    });
-    const ref = doc(db, "Movies", id);
-    await updateDoc(ref, {
-      rating: rating + prevRating,
-      user: userRated + 1,
-    });
+    if (useAppstate.login) {
+      await addDoc(reviewsRef, {
+        Movieid: id,
+        Name: useAppstate.userName,
+        rating: rating,
+        Thoughts: form,
+        Timestamp: new Date().getTime(),
+      });
+      const ref = doc(db, "Movies", id);
+      await updateDoc(ref, {
+        rating: rating + prevRating,
+        user: userRated + 1,
+      });
 
-    setRating(0);
-    setform("");
-    swal({
-      title: "Review added successfully",
-      icon: "success",
-      buttons: false,
-      timer: 3000,
-    });
-    setLoading(false);
+      setRating(0);
+      setform("");
+      setAdded(Added+1);
+      swal({
+        title: "Review added successfully",
+        icon: "success",
+        buttons: false,
+        timer: 3000,
+      });
+      setLoading(false);
+    }else{
+      navigate('/login')
+    }
   };
 
   useEffect(() => {
     async function getData() {
       setReviewLoading(true);
+      setdata([])
       let queryy = query(reviewsRef, where("Movieid", "==", id));
       const querysnap = await getDocs(queryy);
 
@@ -51,7 +63,7 @@ const Reviews = ({ id, prevRating, userRated }) => {
       setReviewLoading(false);
     }
     getData();
-  }, []);
+  }, [Added]);
 
   return (
     <div className="mt-4 border-t-2 border-gray-600 w-full">
@@ -83,14 +95,22 @@ const Reviews = ({ id, prevRating, userRated }) => {
         <div className="mt-4">
           {data.map((rev, index) => {
             return (
-              <div key={index} className="bg-gray-700 p-2 w-full shadow-md shadow-gray-200 mt-2">
+              <div
+                key={index}
+                className="bg-gray-700 p-2 w-full shadow-md shadow-gray-200 mt-2"
+              >
                 <div className="flex items-center">
                   <p className="text-blue-600 text-xl">{rev.Name}</p>
                   <p className="ml-3 text-md">
                     {new Date(rev.Timestamp).toLocaleString()}
                   </p>
                 </div>
-                <ReactStars size={20} value={rev.rating} half={true} edit={false} />
+                <ReactStars
+                  size={20}
+                  value={rev.rating}
+                  half={true}
+                  edit={false}
+                />
                 <p className="text-lg">{rev.Thoughts}</p>
               </div>
             );

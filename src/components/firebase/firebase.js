@@ -20,4 +20,5 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const moviesRef = collection(db,"Movies")
 export const reviewsRef = collection(db,"Reviews")
+export const UsersRef = collection(db,"Users")
 export default app;

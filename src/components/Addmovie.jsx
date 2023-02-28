@@ -1,33 +1,43 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { TailSpin } from "react-loader-spinner";
 import { addDoc } from "firebase/firestore";
 import { moviesRef } from "./firebase/firebase";
 import swal from "sweetalert";
+import { Appstate } from "../App";
+import { useNavigate } from "react-router-dom";
 
 const Addmovie = () => {
+  const useAppstate = useContext(Appstate);
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     title: "",
     year: "",
     description: "",
-    image: ""
+    image: "",
+    rating: 0,
+    user: 0,
   });
 
   const addmovie = async () => {
     setLoading(true);
-    await addDoc(moviesRef, form);
-    swal({
+    if (useAppstate.login) {
+      await addDoc(moviesRef, form);
+      swal({
         title: "Successfully added",
         icon: "success",
         buttons: false,
         timer: 2000,
-    })
-    setForm({
+      });
+      setForm({
         title: "",
         year: "",
         description: "",
-        image: ""
-      })
-    setLoading(false);
+        image: "",
+      });
+      setLoading(false);
+    }else{
+navigate("/login")
+    }
   };
 
   const [Loading, setLoading] = useState(false);
@@ -107,7 +117,10 @@ const Addmovie = () => {
                 </div>
               </div>
               <div class="p-2 w-full">
-                <button onClick={addmovie} class="flex mx-auto text-white bg-green-500 border-0 py-2 px-8 focus:outline-none hover:bg-green-700 rounded text-lg">
+                <button
+                  onClick={addmovie}
+                  class="flex mx-auto text-white bg-green-500 border-0 py-2 px-8 focus:outline-none hover:bg-green-700 rounded text-lg"
+                >
                   {Loading ? (
                     <TailSpin height={25} color="white" />
                   ) : (

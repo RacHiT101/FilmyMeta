@@ -8,6 +8,7 @@ import Reviews from "./Reviews";
 
 const Details = () => {
   const { id } = useParams();
+
   const [Loading, setLoading] = useState(false);
   const [data, setData] = useState({
     title: "",
@@ -42,9 +43,14 @@ const Details = () => {
             <h1 className="text-3xl font-semibold text-gray-400">
               {data.title} <span className="text-lg">({data.year})</span>
             </h1>
-            <ReactStars size={20} value={data.rating/data.user} edit={false} half={true} />
+            <ReactStars
+              size={20}
+              value={data.rating / data.user}
+              edit={false}
+              half={true}
+            />
             <p className="mt-3">{data.description}</p>
-            <Reviews id={id} prevRating={data.rating} userRated={data.user}/>
+            <Reviews id={id} prevRating={data.rating} userRated={data.user} />
           </div>
         </>
       )}

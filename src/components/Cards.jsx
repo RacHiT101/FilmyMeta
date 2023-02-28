@@ -36,8 +36,8 @@ const Cards = () => {
                 className="card rounded-lg shadow-lg p-2 hover:-translate-y-4 transition-all duration-500 cursor-pointer mt-6"
               >
                 <img src={movie.image} alt="-" className="h-80" />
-                <h1>
-                  <span className="text-gray-500">Name:</span> {movie.title}
+                <h1 className="mt-1">
+                   {movie.title}
                 </h1>
                 <h1 className="flex items-center">
                   <span className="text-gray-500 mr-1">Rating:</span>
